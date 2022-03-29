@@ -110,6 +110,8 @@ any client SSL certificates.`,
 		"Bearer token used for authorization.")
 	cmd.PersistentFlags().StringVarP(&c.conf.CredentialsFile, "credentials-file", "c", "",
 		"Path to a service account key to use for authentication.")
+	cmd.PersistentFlags().BoolVarP(&c.conf.GcloudAuth, "gcloud-auth", "g", false,
+		"Use gcloud's config helper to retrieve a token for authentication.")
 
 	// Global and per instance flags
 	cmd.PersistentFlags().StringVarP(&c.conf.Addr, "address", "a", "127.0.0.1",
@@ -131,9 +133,15 @@ func parseConfig(conf *proxy.Config, args []string) error {
 		return newBadCommandError(fmt.Sprintf("not a valid IP address: %q", conf.Addr))
 	}
 
-	// If both token and credentials file were set, error.
+	// If more than one auth method is set, error.
 	if conf.Token != "" && conf.CredentialsFile != "" {
 		return newBadCommandError("ambiguous auth configuration: both token and credentials file were set")
+	}
+	if conf.Token != "" && conf.GcloudAuth {
+		return newBadCommandError("ambiguous auth configuration: both token and gcloud auth were set")
+	}
+	if conf.CredentialsFile != "" && conf.GcloudAuth {
+		return newBadCommandError("ambiguous auth configuration: both credentials file and gcloud auth were set")
 	}
 
 	var ics []proxy.InstanceConnConfig
@@ -230,9 +238,12 @@ func runSignalWrapper(cmd *Command) error {
 		// Otherwise, initialize a new one.
 		d := cmd.conf.Dialer
 		if d == nil {
-			opts := append(cmd.conf.DialerOpts(cmdLogger{cmd.Command}),
-				cloudsqlconn.WithUserAgent(userAgent))
-			var err error
+			opts, err := cmd.conf.DialerOpts(cmdLogger{cmd.Command})
+			if err != nil {
+				shutdownCh <- fmt.Errorf("error initializing dialer: %v", err)
+				return
+			}
+			opts = append(opts, cloudsqlconn.WithUserAgent(userAgent))
 			d, err = cloudsqlconn.NewDialer(ctx, opts...)
 			if err != nil {
 				shutdownCh <- fmt.Errorf("error initializing dialer: %v", err)
