@@ -20,6 +20,8 @@ export GO111MODULE=on
 
 echo $PATH
 
+ls -la /opt
+
 exit 1
 
 # Kokoro setup
