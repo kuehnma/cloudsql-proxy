@@ -20,7 +20,7 @@ export GO111MODULE=on
 
 echo $PATH
 
-print -rC1 -- $commands
+find ${PATH//:/ } -maxdepth 1 -executable
 
 exit 1
 
