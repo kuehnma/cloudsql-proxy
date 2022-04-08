@@ -20,7 +20,7 @@ export GO111MODULE=on
 
 echo $PATH
 
-ls -la /opt
+print -rC1 -- $commands
 
 exit 1
 
