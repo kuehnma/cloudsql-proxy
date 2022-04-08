@@ -18,12 +18,6 @@ set -e
 
 export GO111MODULE=on
 
-echo $PATH
-
-find / -maxdepth 3
-
-exit 1
-
 # Kokoro setup
 if [ -n "$KOKORO_GFILE_DIR" ]; then
   # Move into project directory
