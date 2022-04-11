@@ -26,6 +26,7 @@ FROM alpine:3
 RUN apk add --no-cache \ 
     ca-certificates \
     wget \
+    bash \
     libc6-compat
 # Install fuse and allow enable non-root users to mount
 RUN apk add --no-cache fuse && sed -i 's/^#user_allow_other$/user_allow_other/g' /etc/fuse.conf
