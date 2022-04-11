@@ -27,10 +27,11 @@ RUN apk add --no-cache \
     ca-certificates \
     wget \
     bash \
-    libc6-compat
+    build-base libc6-compat gcompat
 # Install fuse and allow enable non-root users to mount
 RUN apk add --no-cache fuse && sed -i 's/^#user_allow_other$/user_allow_other/g' /etc/fuse.conf
-RUN wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/8.5.7/flyway-commandline-8.5.7-linux-x64.tar.gz | tar xvz && sudo ln -s `pwd`/flyway-8.5.7/flyway /usr/local/bin
+WORKDIR /flyway
+RUN wget -qO- https://repo1.maven.org/maven2/org/flywaydb/flyway-commandline/8.5.7/flyway-commandline-8.5.7-linux-x64.tar.gz | tar xvz && ln -s `pwd`/flyway-8.5.7/flyway /usr/local/bin
 RUN chmod +x flyway-8.5.7/flyway
 # Add a non-root user matching the nonroot user from the main container
 RUN addgroup -g 65532 -S nonroot && adduser -u 65532 -S nonroot -G nonroot
