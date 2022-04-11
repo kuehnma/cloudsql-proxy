@@ -25,6 +25,7 @@ RUN go build -ldflags "-X main.metadataString=container.alpine" -o cloud_sql_pro
 FROM alpine:3
 RUN apk add --no-cache \ 
     ca-certificates \
+    wget \
     libc6-compat
 # Install fuse and allow enable non-root users to mount
 RUN apk add --no-cache fuse && sed -i 's/^#user_allow_other$/user_allow_other/g' /etc/fuse.conf
