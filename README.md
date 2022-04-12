@@ -15,6 +15,24 @@ docker buildx inspect --bootstrap
 docker buildx build --push --platform=linux/amd64 -t registry.gitlab.com/philliphoffmann/swipe-and-find/gce-proxy:1.30.0-buster . -f Dockerfile.buster
 ```
 
+If authentication with docker login is not enough set the environment variable $DOCKER_AUTH_CONFIG
+
+```
+{
+  "auths": {
+    "registry.gitlab.com": {
+      "auth": "bFDya3VzLmt1ZWhuSDF0LnNvZnR3YXJlOnd6RjZlFGHDN14uQmYyYg==" // base 64 encoded gitlab credentials (format: username:password) 
+    }
+  }
+}
+```
+
+```
+echo -n "username:password" | base64
+
+```
+
+
 # Cloud SQL Auth proxy
 
 ![CI][ci-badge]
