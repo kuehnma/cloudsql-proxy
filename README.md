@@ -1,3 +1,20 @@
+## Build Container for Cloud Proxy Swipe & Find
+
+Modified Dockerfile.alpine and Dockerfile.buster to include flyway executable.
+
+```
+# login to container registry with your gitlab account
+docker login registry.gitlab.com
+
+# create multi platform builder (on amd64 systems not required, on apple silicon mandatory)
+docker buildx create --name mybuilder
+docker buildx use mybuilder
+docker buildx inspect --bootstrap
+
+# run this line to actually build container and push it to gitlab container registry
+docker buildx build --push --platform=linux/amd64 -t registry.gitlab.com/philliphoffmann/swipe-and-find/gce-proxy:1.30.0-buster . -f Dockerfile.buster
+```
+
 # Cloud SQL Auth proxy
 
 ![CI][ci-badge]
